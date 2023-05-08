@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>chat gpt model 3.5</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+  </head>
+  <body>
+    <main>
+        <h1>Welcome to my gpt chat</h1> 
+        <form action="" >
+            <input type="text" name="message" id="message">
+            <button type="submit"> send</button>
+        </form> 
+        <div id="chat-log">
+
+        </div>
+    </main>
+
+    <!-- <section>
+        <h1> generate image with chat gpt </h1>
+
+    <form action="" class="form_img" >
+        <input type="text" name="message_img" id="message_img" >
+        <button type="submit"> generate image </button>
+    </form> 
+
+    <div id="chat-log-img">
+
+    </div>
+    </section>
+     -->
+  </body>
+
+  <script title="chat conversation">
+    let messagesChat = []
+    const chatLog = document.getElementById('chat-log');
+    const message = document.getElementById('message');
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+        const messageValue = message.value;
+        const newMessage = { "role": "user", "content":`${messageValue}`}
+        messagesChat.push(newMessage);
+        message.value = '';
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.classList.add('message--sent');
+        messageElement.innerHTML =`
+            <div class='message__text'> me:  ${messageValue} </div>
+        `;
+        chatLog.appendChild(messageElement)
+        chatLog.scrollTop = chatLog.scrollHeight;
+        
+        fetch('http://localhost:8090/gpt-react',{
+            method: 'POST',
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify({texte : messageValue}),   
+        }).then((res => res.json() ))
+           .then((data) => {
+                console.log(data);
+                let newAssistantMessage = { "role": "assistant", "content":`${data.completion.content}`}
+                messagesChat.push(newAssistantMessage)
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                messageElement.classList.add('message--received');
+                messageElement.innerHTML =`
+                    <div class='message__text'>assistant:  ${data.completion.content} </div>
+                `;
+                chatLog.appendChild(messageElement)
+                chatLog.scrollTop = chatLog.scrollHeight;
+
+            })
+
+    });
+</script>
+
+  <!-- <script title="imagegenerator">
+
+    let messagesChat_img = []
+    const chatLog_img = document.getElementById('chat-log-img');
+    const message_img = document.getElementById('message_img');
+
+    const form_img = document.querySelector('form');
+    form_img.addEventListener('submit', event => {
+        event.preventDefault();
+        const messageValue_img = message_img.value;
+        const newMessage_img = {
+            "prompt": `${messageValue_img}`,
+            "n": 2,
+            "size": "1024x1024"
+            }
+
+        messagesChat_img.push(newMessage_img);
+        message_img.value = '';
+        const messageElement_img = document.createElement('div');
+        messageElement_img.classList.add('message_img');
+        messageElement_img.classList.add('message_img--sent');
+        messageElement_img.innerHTML =`
+            <div class='message_img__text'>${messageValue_img} </div>
+        `;
+        chatLog_img.appendChild(messageElement_img)
+        chatLog_img.scrollTop = chatLog_img.scrollHeight;
+
+        console.log("messageValue_img", messageValue_img)
+        
+        fetch('http://localhost:8090/gpt-image',{
+            method: 'POST',
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify({messageValue_img}),   
+        }).then((res => res.json() ))
+           .then((data) => {
+                console.log("frontend", data.img_generate.data);
+                let newAssistantMessage_img = data.img_generate.data
+                messagesChat_img.push(newAssistantMessage_img)
+                const messageElement_img = document.createElement('div');
+                messageElement_img.classList.add('message_img');
+                messageElement_img.classList.add('message_img--received');
+                messageElement_img.innerHTML =`
+                    <div class='message_img__text'>${data.img_generate.data[0].url}</div>
+                    <img src= ${data.img_generate.data[0].url} alt="Girl in a jacket">
+                `;
+                chatLog_img.appendChild(messageElement_img)
+                chatLog_img.scrollTop = chatLog_img.scrollHeight;
+
+            })
+
+    })
+</script> -->
+
+  </html>
